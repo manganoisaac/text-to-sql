@@ -5,8 +5,10 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from agent import score_violations
-from agent.types import SanityViolationType, Violation
+from agent.sql_agent import _sql_matches, call_llm
+from agent.types import QueryComplexity, SanityViolationType, SQLResult, Violation
 from query import _average_scores
+from unittest.mock import patch
 
 
 class QueryConfidenceTests(unittest.TestCase):
@@ -38,6 +40,81 @@ class QueryConfidenceTests(unittest.TestCase):
     def test_confidence_rejects_scores_outside_unit_interval(self):
         with self.assertRaisesRegex(ValueError, "between 0 and 1"):
             _average_scores([0.8, 1.1])
+
+    def test_sql_match_ignores_formatting_and_keyword_case(self):
+        self.assertTrue(
+            _sql_matches(
+                "select * from orders where total > 10;",
+                "SELECT *\nFROM orders\nWHERE total > 10",
+            )
+        )
+
+    def test_sql_match_rejects_different_queries(self):
+        self.assertFalse(
+            _sql_matches(
+                "SELECT * FROM orders WHERE total > 10",
+                "SELECT * FROM orders WHERE total > 100",
+            )
+        )
+
+    @patch("agent.sql_agent._generate_sql")
+    @patch("agent.sql_agent.get_llm")
+    def test_complex_queries_use_two_strategies_and_record_agreement(
+        self, get_llm, generate_sql
+    ):
+        classifier = get_llm.return_value.with_structured_output.return_value
+        classifier.invoke.return_value = QueryComplexity(
+            is_complex=True, reason="Multiple joins and aggregations"
+        )
+        generate_sql.side_effect = [
+            SQLResult(
+                sql_query="SELECT COUNT(*) FROM orders",
+                explanation="Count orders",
+                confidence=0.8,
+                tables_and_columns=[],
+            ),
+            SQLResult(
+                sql_query="select count(*) from orders;",
+                explanation="Count orders",
+                confidence=0.8,
+                tables_and_columns=[],
+            ),
+        ]
+
+        result = call_llm({"messages": [], "user_query": "Count orders"})
+
+        self.assertEqual(generate_sql.call_count, 2)
+        self.assertEqual(
+            [call.args[1] for call in generate_sql.call_args_list],
+            [
+                "Generate the clearest direct SQL solution. Prefer a straightforward SELECT "
+                "with explicit joins and avoid CTEs unless they materially improve clarity.",
+                "Independently solve the question by first decomposing it into logical steps. "
+                "Prefer named CTEs for those steps, and verify joins, filters, and aggregation "
+                "against the requested result before returning SQL.",
+            ],
+        )
+        self.assertEqual(result["sql_agreement"], 1.0)
+
+    @patch("agent.sql_agent._generate_sql")
+    @patch("agent.sql_agent.get_llm")
+    def test_simple_queries_use_one_generation_and_no_agreement_score(
+        self, get_llm, generate_sql
+    ):
+        get_llm.return_value.with_structured_output.return_value.invoke.return_value = (
+            QueryComplexity(is_complex=False, reason="Simple lookup")
+        )
+        generate_sql.return_value = SQLResult(
+            sql_query="SELECT * FROM orders",
+            explanation="List orders",
+            confidence=0.8,
+            tables_and_columns=[],
+        )
+
+        result = call_llm({"messages": [], "user_query": "List orders"})
+
+        generate_sql.assert_called_once_with([])
+        self.assertIsNone(result["sql_agreement"])
 
 
 if __name__ == "__main__":

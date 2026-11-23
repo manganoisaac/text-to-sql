@@ -108,6 +108,8 @@ uv run src/main.py
 
 `src/main.py` uses `FakeEmbedder` for local wiring/testing, so it does not require an OpenAI API key. The fake is keyword-based and is not suitable for semantic retrieval. Replace it with `OpenAIEmbedder()` when using real embeddings. The prompt builder keeps retrieval results structured while enrichment runs, then serializes them for the prompt only at the end.
 
+Before SQL generation, an LLM classifies the question's complexity. Simple questions use one SQL generation call. Complex questions are sent concurrently to two generation strategies (direct SQL and stepwise/CTE-oriented); normalized SQL agreement is included as an additional score in the returned confidence. Disagreement lowers confidence but does not by itself block the query.
+
 ## Notes
 
 - Monetary amounts use `NUMERIC`, and order-item tax defaults to 10% (GST-style example data).

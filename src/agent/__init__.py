@@ -6,6 +6,7 @@ from .sanity_checker_agent import sanity_checker, score_violations
 from .sql_agent import agent as sql_agent
 from .types import (
     CriticResult,
+    QueryComplexity,
     SQLAgentState,
     SQLResult,
     SanityViolationType,
@@ -15,6 +16,7 @@ from .types import (
 
 __all__ = [
     "CriticResult",
+    "QueryComplexity",
     "SQLAgentState",
     "SQLResult",
     "SanityViolationType",

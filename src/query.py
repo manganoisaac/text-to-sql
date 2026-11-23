@@ -119,9 +119,14 @@ def _finish_query(
 
     rows = execute_readonly_sql(sql_query, engine)
     critic_result = sanity_checker(user_query, sql_query, rows["dataframe"])
-    confidence = _average_scores(
-        [similarity, score_violations(critic_result.sanity_violations)]
-    )
+    confidence_scores = [
+        similarity,
+        score_violations(critic_result.sanity_violations),
+    ]
+    sql_agreement = result.get("sql_agreement")
+    if sql_agreement is not None:
+        confidence_scores.append(sql_agreement)
+    confidence = _average_scores(confidence_scores)
 
     return {
         "type": "result",

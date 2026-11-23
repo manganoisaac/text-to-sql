@@ -1,0 +1,2730 @@
+{
+  "database": "text2sql_sample",
+  "dialect": "postgresql",
+  "schemas": [
+    {
+      "name": "retail",
+      "tables": [
+        {
+          "name": "categories",
+          "kind": "table",
+          "description": "Hierarchical product categories; a null parent identifies a top-level category.",
+          "primary_key": [
+            "category_id"
+          ],
+          "foreign_keys": [
+            {
+              "name": "categories_parent_category_id_fkey",
+              "columns": [
+                "parent_category_id"
+              ],
+              "referred_schema": "retail",
+              "referred_table": "categories",
+              "referred_columns": [
+                "category_id"
+              ]
+            }
+          ],
+          "unique_constraints": [
+            {
+              "name": "categories_category_name_key",
+              "columns": [
+                "category_name"
+              ]
+            }
+          ],
+          "columns": [
+            {
+              "name": "category_id",
+              "type": "BIGINT",
+              "description": "Stable generated identifier for one product category.",
+              "nullable": false,
+              "server_default": null,
+              "identity": {
+                "always": false,
+                "start": 1,
+                "increment": 1
+              },
+              "primary_key": true,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "category_name",
+              "type": "TEXT",
+              "description": "Unique human-readable product category name.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "parent_category_id",
+              "type": "BIGINT",
+              "description": "Optional parent category identifier for the category hierarchy.",
+              "nullable": true,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [
+                {
+                  "schema": "retail",
+                  "table": "categories",
+                  "column": "category_id"
+                }
+              ],
+              "is_categorical": false,
+              "sample_values": null
+            }
+          ]
+        },
+        {
+          "name": "customer_addresses",
+          "kind": "table",
+          "description": "Saved customer delivery addresses used by orders.",
+          "primary_key": [
+            "address_id"
+          ],
+          "foreign_keys": [
+            {
+              "name": "customer_addresses_customer_id_fkey",
+              "columns": [
+                "customer_id"
+              ],
+              "referred_schema": "retail",
+              "referred_table": "customers",
+              "referred_columns": [
+                "customer_id"
+              ]
+            }
+          ],
+          "unique_constraints": [],
+          "columns": [
+            {
+              "name": "address_id",
+              "type": "BIGINT",
+              "description": "Stable generated identifier for one saved customer address.",
+              "nullable": false,
+              "server_default": null,
+              "identity": {
+                "always": false,
+                "start": 1,
+                "increment": 1
+              },
+              "primary_key": true,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "customer_id",
+              "type": "BIGINT",
+              "description": "Customer who owns this address; references customers.customer_id.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [
+                {
+                  "schema": "retail",
+                  "table": "customers",
+                  "column": "customer_id"
+                }
+              ],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "label",
+              "type": "TEXT",
+              "description": "Customer-assigned address label such as Home, Office, or Warehouse.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": true,
+              "sample_values": [
+                "Business",
+                "Home",
+                "Office",
+                "Studio",
+                "Warehouse",
+                "Workshop"
+              ]
+            },
+            {
+              "name": "line_1",
+              "type": "TEXT",
+              "description": "Street address or delivery address line.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "city",
+              "type": "TEXT",
+              "description": "Suburb or city for delivery.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": true,
+              "sample_values": [
+                "Adelaide",
+                "Brisbane",
+                "Canberra",
+                "Darwin",
+                "Hobart",
+                "Melbourne",
+                "Newcastle",
+                "Perth",
+                "South Brisbane",
+                "St Kilda",
+                "Sydney",
+                "Wollongong"
+              ]
+            },
+            {
+              "name": "state_region",
+              "type": "TEXT",
+              "description": "State, territory, or region for delivery.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": true,
+              "sample_values": [
+                "ACT",
+                "NSW",
+                "NT",
+                "QLD",
+                "SA",
+                "TAS",
+                "VIC",
+                "WA"
+              ]
+            },
+            {
+              "name": "postal_code",
+              "type": "TEXT",
+              "description": "Postal or ZIP code for delivery.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "country_code",
+              "type": "CHAR(2)",
+              "description": "Two-letter ISO 3166-1 country code.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": true,
+              "sample_values": [
+                "AU"
+              ]
+            },
+            {
+              "name": "is_default",
+              "type": "BOOLEAN",
+              "description": "Whether this is the customer default address; at most one per customer.",
+              "nullable": false,
+              "server_default": "false",
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": true,
+              "sample_values": [
+                false,
+                true
+              ]
+            }
+          ]
+        },
+        {
+          "name": "customers",
+          "kind": "table",
+          "description": "Customer accounts with contact, signup, segment, and marketing-consent information.",
+          "primary_key": [
+            "customer_id"
+          ],
+          "foreign_keys": [],
+          "unique_constraints": [
+            {
+              "name": "customers_email_key",
+              "columns": [
+                "email"
+              ]
+            }
+          ],
+          "columns": [
+            {
+              "name": "customer_id",
+              "type": "BIGINT",
+              "description": "Stable generated identifier for one customer.",
+              "nullable": false,
+              "server_default": null,
+              "identity": {
+                "always": false,
+                "start": 1,
+                "increment": 1
+              },
+              "primary_key": true,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "first_name",
+              "type": "TEXT",
+              "description": "Customer given name; sample values are synthetic.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "last_name",
+              "type": "TEXT",
+              "description": "Customer family name; sample values are synthetic.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "email",
+              "type": "TEXT",
+              "description": "Unique customer contact email address; sample values use reserved example domains.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "phone",
+              "type": "TEXT",
+              "description": "Optional customer contact telephone number; sample values are synthetic.",
+              "nullable": true,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "segment",
+              "type": "TEXT",
+              "description": "Commercial grouping used for customer analysis: consumer, small_business, or enterprise.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": true,
+              "sample_values": [
+                "consumer",
+                "enterprise",
+                "small_business"
+              ]
+            },
+            {
+              "name": "signup_date",
+              "type": "DATE",
+              "description": "Calendar date when the customer account was created.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "marketing_opt_in",
+              "type": "BOOLEAN",
+              "description": "Whether the customer has consented to receive marketing communications.",
+              "nullable": false,
+              "server_default": "false",
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": true,
+              "sample_values": [
+                false,
+                true
+              ]
+            }
+          ]
+        },
+        {
+          "name": "inventory",
+          "kind": "table",
+          "description": "Current on-hand, reserved, and reorder-threshold quantities by warehouse and product.",
+          "primary_key": [
+            "warehouse_id",
+            "product_id"
+          ],
+          "foreign_keys": [
+            {
+              "name": "inventory_product_id_fkey",
+              "columns": [
+                "product_id"
+              ],
+              "referred_schema": "retail",
+              "referred_table": "products",
+              "referred_columns": [
+                "product_id"
+              ]
+            },
+            {
+              "name": "inventory_warehouse_id_fkey",
+              "columns": [
+                "warehouse_id"
+              ],
+              "referred_schema": "retail",
+              "referred_table": "warehouses",
+              "referred_columns": [
+                "warehouse_id"
+              ]
+            }
+          ],
+          "unique_constraints": [],
+          "columns": [
+            {
+              "name": "warehouse_id",
+              "type": "BIGINT",
+              "description": "Warehouse holding this product stock; part of the inventory key.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": true,
+              "foreign_keys": [
+                {
+                  "schema": "retail",
+                  "table": "warehouses",
+                  "column": "warehouse_id"
+                }
+              ],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "product_id",
+              "type": "BIGINT",
+              "description": "Product held at this warehouse; part of the inventory key.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": true,
+              "foreign_keys": [
+                {
+                  "schema": "retail",
+                  "table": "products",
+                  "column": "product_id"
+                }
+              ],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "on_hand",
+              "type": "INTEGER",
+              "description": "Physical units currently recorded at the warehouse.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "reserved",
+              "type": "INTEGER",
+              "description": "Units allocated to orders and not available for new orders.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "reorder_point",
+              "type": "INTEGER",
+              "description": "Stock threshold at or below which replenishment should be considered.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "last_counted_at",
+              "type": "DATE",
+              "description": "Date when the warehouse last verified this stock quantity.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            }
+          ]
+        },
+        {
+          "name": "inventory_adjustments",
+          "kind": "table",
+          "description": "Timestamped stock movements and corrections by warehouse, product, quantity, and reason.",
+          "primary_key": [
+            "adjustment_id"
+          ],
+          "foreign_keys": [
+            {
+              "name": "inventory_adjustments_warehouse_id_product_id_fkey",
+              "columns": [
+                "warehouse_id",
+                "product_id"
+              ],
+              "referred_schema": "retail",
+              "referred_table": "inventory",
+              "referred_columns": [
+                "warehouse_id",
+                "product_id"
+              ]
+            }
+          ],
+          "unique_constraints": [],
+          "columns": [
+            {
+              "name": "adjustment_id",
+              "type": "BIGINT",
+              "description": "Stable generated identifier for one inventory movement record.",
+              "nullable": false,
+              "server_default": null,
+              "identity": {
+                "always": false,
+                "start": 1,
+                "increment": 1
+              },
+              "primary_key": true,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "warehouse_id",
+              "type": "BIGINT",
+              "description": "Warehouse where the stock movement occurred.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [
+                {
+                  "schema": "retail",
+                  "table": "inventory",
+                  "column": "warehouse_id"
+                }
+              ],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "product_id",
+              "type": "BIGINT",
+              "description": "Product affected by the stock movement.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [
+                {
+                  "schema": "retail",
+                  "table": "inventory",
+                  "column": "product_id"
+                }
+              ],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "quantity_change",
+              "type": "INTEGER",
+              "description": "Signed unit change: positive adds stock and negative removes stock.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "reason",
+              "type": "TEXT",
+              "description": "Movement category: receipt, cycle_count, damage, transfer, or return.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": true,
+              "sample_values": [
+                "cycle_count",
+                "damage",
+                "receipt",
+                "return",
+                "transfer"
+              ]
+            },
+            {
+              "name": "occurred_at",
+              "type": "TIMESTAMP",
+              "description": "Timestamp when the inventory movement was recorded.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "note",
+              "type": "TEXT",
+              "description": "Optional operational note describing the inventory movement.",
+              "nullable": true,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            }
+          ]
+        },
+        {
+          "name": "order_items",
+          "kind": "table",
+          "description": "Products and captured unit pricing for each order line, including quantity, discount, and tax rate.",
+          "primary_key": [
+            "order_id",
+            "line_number"
+          ],
+          "foreign_keys": [
+            {
+              "name": "order_items_order_id_fkey",
+              "columns": [
+                "order_id"
+              ],
+              "referred_schema": "retail",
+              "referred_table": "orders",
+              "referred_columns": [
+                "order_id"
+              ]
+            },
+            {
+              "name": "order_items_product_id_fkey",
+              "columns": [
+                "product_id"
+              ],
+              "referred_schema": "retail",
+              "referred_table": "products",
+              "referred_columns": [
+                "product_id"
+              ]
+            }
+          ],
+          "unique_constraints": [],
+          "columns": [
+            {
+              "name": "order_id",
+              "type": "BIGINT",
+              "description": "Order containing this line item.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": true,
+              "foreign_keys": [
+                {
+                  "schema": "retail",
+                  "table": "orders",
+                  "column": "order_id"
+                }
+              ],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "line_number",
+              "type": "SMALLINT",
+              "description": "Line sequence within the order; combined with order_id forms the primary key.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": true,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "product_id",
+              "type": "BIGINT",
+              "description": "Product purchased on this line.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [
+                {
+                  "schema": "retail",
+                  "table": "products",
+                  "column": "product_id"
+                }
+              ],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "quantity",
+              "type": "INTEGER",
+              "description": "Number of product units purchased on this line.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "unit_price",
+              "type": "NUMERIC(10, 2)",
+              "description": "Per-unit selling price captured when the order was placed, before line discount and tax.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "discount_pct",
+              "type": "NUMERIC(5, 4)",
+              "description": "Line-level discount fraction between zero and one; for example 0.05 means five percent.",
+              "nullable": false,
+              "server_default": "0",
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "tax_rate",
+              "type": "NUMERIC(5, 4)",
+              "description": "Tax fraction applied after line discount; sample orders use 0.10.",
+              "nullable": false,
+              "server_default": "0.10",
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            }
+          ]
+        },
+        {
+          "name": "order_promotions",
+          "kind": "table",
+          "description": "Associative records linking orders to the promotion codes applied to them.",
+          "primary_key": [
+            "order_id",
+            "promotion_id"
+          ],
+          "foreign_keys": [
+            {
+              "name": "order_promotions_order_id_fkey",
+              "columns": [
+                "order_id"
+              ],
+              "referred_schema": "retail",
+              "referred_table": "orders",
+              "referred_columns": [
+                "order_id"
+              ]
+            },
+            {
+              "name": "order_promotions_promotion_id_fkey",
+              "columns": [
+                "promotion_id"
+              ],
+              "referred_schema": "retail",
+              "referred_table": "promotions",
+              "referred_columns": [
+                "promotion_id"
+              ]
+            }
+          ],
+          "unique_constraints": [],
+          "columns": [
+            {
+              "name": "order_id",
+              "type": "BIGINT",
+              "description": "Order to which the promotion code was applied.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": true,
+              "foreign_keys": [
+                {
+                  "schema": "retail",
+                  "table": "orders",
+                  "column": "order_id"
+                }
+              ],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "promotion_id",
+              "type": "BIGINT",
+              "description": "Promotion applied to the order.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": true,
+              "foreign_keys": [
+                {
+                  "schema": "retail",
+                  "table": "promotions",
+                  "column": "promotion_id"
+                }
+              ],
+              "is_categorical": false,
+              "sample_values": null
+            }
+          ]
+        },
+        {
+          "name": "orders",
+          "kind": "table",
+          "description": "Customer orders with placement time, delivery address, channel, currency, and fulfillment status.",
+          "primary_key": [
+            "order_id"
+          ],
+          "foreign_keys": [
+            {
+              "name": "orders_customer_id_fkey",
+              "columns": [
+                "customer_id"
+              ],
+              "referred_schema": "retail",
+              "referred_table": "customers",
+              "referred_columns": [
+                "customer_id"
+              ]
+            },
+            {
+              "name": "orders_ship_to_address_id_fkey",
+              "columns": [
+                "ship_to_address_id"
+              ],
+              "referred_schema": "retail",
+              "referred_table": "customer_addresses",
+              "referred_columns": [
+                "address_id"
+              ]
+            }
+          ],
+          "unique_constraints": [
+            {
+              "name": "orders_order_number_key",
+              "columns": [
+                "order_number"
+              ]
+            }
+          ],
+          "columns": [
+            {
+              "name": "order_id",
+              "type": "BIGINT",
+              "description": "Stable generated internal identifier for one order.",
+              "nullable": false,
+              "server_default": null,
+              "identity": {
+                "always": false,
+                "start": 1,
+                "increment": 1
+              },
+              "primary_key": true,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "order_number",
+              "type": "TEXT",
+              "description": "Unique customer-facing order reference.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "customer_id",
+              "type": "BIGINT",
+              "description": "Customer who placed the order; references customers.customer_id.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [
+                {
+                  "schema": "retail",
+                  "table": "customers",
+                  "column": "customer_id"
+                }
+              ],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "ship_to_address_id",
+              "type": "BIGINT",
+              "description": "Saved delivery address selected for the order.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [
+                {
+                  "schema": "retail",
+                  "table": "customer_addresses",
+                  "column": "address_id"
+                }
+              ],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "ordered_at",
+              "type": "TIMESTAMP",
+              "description": "Timestamp when the order was placed.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "status",
+              "type": "TEXT",
+              "description": "Order lifecycle state: pending, processing, shipped, delivered, or cancelled.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": true,
+              "sample_values": [
+                "cancelled",
+                "delivered",
+                "pending",
+                "processing",
+                "shipped"
+              ]
+            },
+            {
+              "name": "sales_channel",
+              "type": "TEXT",
+              "description": "Order origin: web, mobile_app, marketplace, or phone.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": true,
+              "sample_values": [
+                "marketplace",
+                "mobile_app",
+                "phone",
+                "web"
+              ]
+            },
+            {
+              "name": "currency",
+              "type": "CHAR(3)",
+              "description": "Three-letter ISO 4217 currency code for order amounts.",
+              "nullable": false,
+              "server_default": "'AUD'::bpchar",
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": true,
+              "sample_values": [
+                "AUD"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "payments",
+          "kind": "table",
+          "description": "Payment attempts and refunds recorded for orders, including amount, method, outcome, and provider reference.",
+          "primary_key": [
+            "payment_id"
+          ],
+          "foreign_keys": [
+            {
+              "name": "payments_order_id_fkey",
+              "columns": [
+                "order_id"
+              ],
+              "referred_schema": "retail",
+              "referred_table": "orders",
+              "referred_columns": [
+                "order_id"
+              ]
+            }
+          ],
+          "unique_constraints": [
+            {
+              "name": "payments_provider_reference_key",
+              "columns": [
+                "provider_reference"
+              ]
+            }
+          ],
+          "columns": [
+            {
+              "name": "payment_id",
+              "type": "BIGINT",
+              "description": "Stable generated identifier for one payment attempt or refund record.",
+              "nullable": false,
+              "server_default": null,
+              "identity": {
+                "always": false,
+                "start": 1,
+                "increment": 1
+              },
+              "primary_key": true,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "order_id",
+              "type": "BIGINT",
+              "description": "Order associated with this payment or refund.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [
+                {
+                  "schema": "retail",
+                  "table": "orders",
+                  "column": "order_id"
+                }
+              ],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "paid_at",
+              "type": "TIMESTAMP",
+              "description": "Timestamp when the payment provider recorded this attempt or refund.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "method",
+              "type": "TEXT",
+              "description": "Payment instrument used: card, paypal, bank_transfer, or gift_card.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": true,
+              "sample_values": [
+                "bank_transfer",
+                "card",
+                "gift_card",
+                "paypal"
+              ]
+            },
+            {
+              "name": "amount",
+              "type": "NUMERIC(12, 2)",
+              "description": "Positive monetary amount of this payment attempt or refund, in the order currency.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "status",
+              "type": "TEXT",
+              "description": "Payment outcome: authorized, captured, failed, or refunded.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": true,
+              "sample_values": [
+                "authorized",
+                "captured",
+                "refunded"
+              ]
+            },
+            {
+              "name": "provider_reference",
+              "type": "TEXT",
+              "description": "Unique transaction reference returned by the payment provider.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            }
+          ]
+        },
+        {
+          "name": "product_reviews",
+          "kind": "table",
+          "description": "Customer product ratings and review text, optionally linked to an order.",
+          "primary_key": [
+            "review_id"
+          ],
+          "foreign_keys": [
+            {
+              "name": "product_reviews_customer_id_fkey",
+              "columns": [
+                "customer_id"
+              ],
+              "referred_schema": "retail",
+              "referred_table": "customers",
+              "referred_columns": [
+                "customer_id"
+              ]
+            },
+            {
+              "name": "product_reviews_order_id_fkey",
+              "columns": [
+                "order_id"
+              ],
+              "referred_schema": "retail",
+              "referred_table": "orders",
+              "referred_columns": [
+                "order_id"
+              ]
+            },
+            {
+              "name": "product_reviews_product_id_fkey",
+              "columns": [
+                "product_id"
+              ],
+              "referred_schema": "retail",
+              "referred_table": "products",
+              "referred_columns": [
+                "product_id"
+              ]
+            }
+          ],
+          "unique_constraints": [],
+          "columns": [
+            {
+              "name": "review_id",
+              "type": "BIGINT",
+              "description": "Stable generated identifier for one product review.",
+              "nullable": false,
+              "server_default": null,
+              "identity": {
+                "always": false,
+                "start": 1,
+                "increment": 1
+              },
+              "primary_key": true,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "customer_id",
+              "type": "BIGINT",
+              "description": "Customer who submitted the review.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [
+                {
+                  "schema": "retail",
+                  "table": "customers",
+                  "column": "customer_id"
+                }
+              ],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "product_id",
+              "type": "BIGINT",
+              "description": "Product being reviewed.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [
+                {
+                  "schema": "retail",
+                  "table": "products",
+                  "column": "product_id"
+                }
+              ],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "order_id",
+              "type": "BIGINT",
+              "description": "Optional associated order; null when the review is not linked to a specific order.",
+              "nullable": true,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [
+                {
+                  "schema": "retail",
+                  "table": "orders",
+                  "column": "order_id"
+                }
+              ],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "rating",
+              "type": "SMALLINT",
+              "description": "Customer score from one to five, with five as the highest rating.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": true,
+              "sample_values": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ]
+            },
+            {
+              "name": "review_title",
+              "type": "TEXT",
+              "description": "Short customer-written review heading.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "review_body",
+              "type": "TEXT",
+              "description": "Full customer-written review text.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "reviewed_at",
+              "type": "DATE",
+              "description": "Calendar date when the review was submitted.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "verified_purchase",
+              "type": "BOOLEAN",
+              "description": "Whether the review is marked as associated with a verified purchase.",
+              "nullable": false,
+              "server_default": "false",
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": true,
+              "sample_values": [
+                false,
+                true
+              ]
+            }
+          ]
+        },
+        {
+          "name": "product_suppliers",
+          "kind": "table",
+          "description": "Many-to-many product sourcing relationships, including supplier cost and preferred source.",
+          "primary_key": [
+            "product_id",
+            "supplier_id"
+          ],
+          "foreign_keys": [
+            {
+              "name": "product_suppliers_product_id_fkey",
+              "columns": [
+                "product_id"
+              ],
+              "referred_schema": "retail",
+              "referred_table": "products",
+              "referred_columns": [
+                "product_id"
+              ]
+            },
+            {
+              "name": "product_suppliers_supplier_id_fkey",
+              "columns": [
+                "supplier_id"
+              ],
+              "referred_schema": "retail",
+              "referred_table": "suppliers",
+              "referred_columns": [
+                "supplier_id"
+              ]
+            }
+          ],
+          "unique_constraints": [],
+          "columns": [
+            {
+              "name": "product_id",
+              "type": "BIGINT",
+              "description": "Product identifier in this supplier-product association.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": true,
+              "foreign_keys": [
+                {
+                  "schema": "retail",
+                  "table": "products",
+                  "column": "product_id"
+                }
+              ],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "supplier_id",
+              "type": "BIGINT",
+              "description": "Supplier identifier in this supplier-product association.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": true,
+              "foreign_keys": [
+                {
+                  "schema": "retail",
+                  "table": "suppliers",
+                  "column": "supplier_id"
+                }
+              ],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "supplier_sku",
+              "type": "TEXT",
+              "description": "Supplier-specific stock-keeping unit for the product.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "supplier_cost",
+              "type": "NUMERIC(10, 2)",
+              "description": "Supplier quoted acquisition cost per unit, in AUD.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "is_preferred",
+              "type": "BOOLEAN",
+              "description": "Whether this supplier is marked as the preferred source for the product.",
+              "nullable": false,
+              "server_default": "false",
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": true,
+              "sample_values": [
+                false,
+                true
+              ]
+            }
+          ]
+        },
+        {
+          "name": "products",
+          "kind": "table",
+          "description": "Product catalog with SKU, category, current pricing, cost, weight, and lifecycle status.",
+          "primary_key": [
+            "product_id"
+          ],
+          "foreign_keys": [
+            {
+              "name": "products_category_id_fkey",
+              "columns": [
+                "category_id"
+              ],
+              "referred_schema": "retail",
+              "referred_table": "categories",
+              "referred_columns": [
+                "category_id"
+              ]
+            }
+          ],
+          "unique_constraints": [
+            {
+              "name": "products_sku_key",
+              "columns": [
+                "sku"
+              ]
+            }
+          ],
+          "columns": [
+            {
+              "name": "product_id",
+              "type": "BIGINT",
+              "description": "Stable generated identifier for one product.",
+              "nullable": false,
+              "server_default": null,
+              "identity": {
+                "always": false,
+                "start": 1,
+                "increment": 1
+              },
+              "primary_key": true,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "sku",
+              "type": "TEXT",
+              "description": "Unique internal stock-keeping unit used to identify the product.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "product_name",
+              "type": "TEXT",
+              "description": "Human-readable name of the product.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "category_id",
+              "type": "BIGINT",
+              "description": "Product category identifier; references categories.category_id.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [
+                {
+                  "schema": "retail",
+                  "table": "categories",
+                  "column": "category_id"
+                }
+              ],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "list_price",
+              "type": "NUMERIC(10, 2)",
+              "description": "Current list price per unit in the product selling currency, AUD in this dataset.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "unit_cost",
+              "type": "NUMERIC(10, 2)",
+              "description": "Current estimated acquisition cost per unit, in AUD.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "weight_kg",
+              "type": "NUMERIC(8, 3)",
+              "description": "Shipping weight of one product unit in kilograms.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "discontinued",
+              "type": "BOOLEAN",
+              "description": "Whether the product is no longer offered for new sale.",
+              "nullable": false,
+              "server_default": "false",
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": true,
+              "sample_values": [
+                false,
+                true
+              ]
+            }
+          ]
+        },
+        {
+          "name": "promotions",
+          "kind": "table",
+          "description": "Promotion codes with percentage discounts and validity date ranges.",
+          "primary_key": [
+            "promotion_id"
+          ],
+          "foreign_keys": [],
+          "unique_constraints": [
+            {
+              "name": "promotions_promo_code_key",
+              "columns": [
+                "promo_code"
+              ]
+            }
+          ],
+          "columns": [
+            {
+              "name": "promotion_id",
+              "type": "BIGINT",
+              "description": "Stable generated identifier for one promotion.",
+              "nullable": false,
+              "server_default": null,
+              "identity": {
+                "always": false,
+                "start": 1,
+                "increment": 1
+              },
+              "primary_key": true,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "promo_code",
+              "type": "TEXT",
+              "description": "Unique code customers or staff apply to an order.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": true,
+              "sample_values": [
+                "AUTUMN15",
+                "BIZ8",
+                "FREESHIP",
+                "WELCOME10"
+              ]
+            },
+            {
+              "name": "description",
+              "type": "TEXT",
+              "description": "Human-readable explanation of the promotion.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "discount_pct",
+              "type": "NUMERIC(5, 4)",
+              "description": "Discount fraction between zero and one; for example 0.10 means ten percent.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "starts_on",
+              "type": "DATE",
+              "description": "First calendar date on which the promotion is valid.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "ends_on",
+              "type": "DATE",
+              "description": "Last calendar date on which the promotion is valid.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            }
+          ]
+        },
+        {
+          "name": "return_items",
+          "kind": "table",
+          "description": "Specific order lines and quantities included in a return, with their refund amounts.",
+          "primary_key": [
+            "return_id",
+            "line_number"
+          ],
+          "foreign_keys": [
+            {
+              "name": "return_items_order_id_line_number_fkey",
+              "columns": [
+                "order_id",
+                "line_number"
+              ],
+              "referred_schema": "retail",
+              "referred_table": "order_items",
+              "referred_columns": [
+                "order_id",
+                "line_number"
+              ]
+            },
+            {
+              "name": "return_items_return_id_fkey",
+              "columns": [
+                "return_id"
+              ],
+              "referred_schema": "retail",
+              "referred_table": "return_requests",
+              "referred_columns": [
+                "return_id"
+              ]
+            },
+            {
+              "name": "return_items_return_id_order_id_fkey",
+              "columns": [
+                "return_id",
+                "order_id"
+              ],
+              "referred_schema": "retail",
+              "referred_table": "return_requests",
+              "referred_columns": [
+                "return_id",
+                "order_id"
+              ]
+            }
+          ],
+          "unique_constraints": [],
+          "columns": [
+            {
+              "name": "return_id",
+              "type": "BIGINT",
+              "description": "Return request containing the returned order line.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": true,
+              "foreign_keys": [
+                {
+                  "schema": "retail",
+                  "table": "return_requests",
+                  "column": "return_id"
+                },
+                {
+                  "schema": "retail",
+                  "table": "return_requests",
+                  "column": "return_id"
+                }
+              ],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "order_id",
+              "type": "BIGINT",
+              "description": "Order containing the returned line; also validates return ownership.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [
+                {
+                  "schema": "retail",
+                  "table": "order_items",
+                  "column": "order_id"
+                },
+                {
+                  "schema": "retail",
+                  "table": "return_requests",
+                  "column": "order_id"
+                }
+              ],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "line_number",
+              "type": "SMALLINT",
+              "description": "Order line whose product is being returned.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": true,
+              "foreign_keys": [
+                {
+                  "schema": "retail",
+                  "table": "order_items",
+                  "column": "line_number"
+                }
+              ],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "quantity",
+              "type": "INTEGER",
+              "description": "Number of units from the order line being returned.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "refund_amount",
+              "type": "NUMERIC(10, 2)",
+              "description": "Refund amount for this returned quantity, in the order currency.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            }
+          ]
+        },
+        {
+          "name": "return_requests",
+          "kind": "table",
+          "description": "Customer return workflow records with request time, status, reason, and resolution.",
+          "primary_key": [
+            "return_id"
+          ],
+          "foreign_keys": [
+            {
+              "name": "return_requests_order_id_fkey",
+              "columns": [
+                "order_id"
+              ],
+              "referred_schema": "retail",
+              "referred_table": "orders",
+              "referred_columns": [
+                "order_id"
+              ]
+            }
+          ],
+          "unique_constraints": [
+            {
+              "name": "return_requests_return_id_order_id_key",
+              "columns": [
+                "return_id",
+                "order_id"
+              ]
+            }
+          ],
+          "columns": [
+            {
+              "name": "return_id",
+              "type": "BIGINT",
+              "description": "Stable generated identifier for one return request.",
+              "nullable": false,
+              "server_default": null,
+              "identity": {
+                "always": false,
+                "start": 1,
+                "increment": 1
+              },
+              "primary_key": true,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "order_id",
+              "type": "BIGINT",
+              "description": "Order for which the return was requested.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [
+                {
+                  "schema": "retail",
+                  "table": "orders",
+                  "column": "order_id"
+                }
+              ],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "requested_at",
+              "type": "TIMESTAMP",
+              "description": "Timestamp when the customer requested the return.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "status",
+              "type": "TEXT",
+              "description": "Return workflow state: requested, approved, received, rejected, or refunded.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": true,
+              "sample_values": [
+                "received",
+                "refunded",
+                "requested"
+              ]
+            },
+            {
+              "name": "reason",
+              "type": "TEXT",
+              "description": "Customer return reason: damaged, wrong_item, not_as_described, changed_mind, or other.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": true,
+              "sample_values": [
+                "not_as_described",
+                "other",
+                "wrong_item"
+              ]
+            },
+            {
+              "name": "resolution",
+              "type": "TEXT",
+              "description": "Optional free-text outcome or resolution note.",
+              "nullable": true,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": true,
+              "sample_values": [
+                "Refund issued"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "shipment_items",
+          "kind": "table",
+          "description": "Order lines and quantities packed into each shipment.",
+          "primary_key": [
+            "shipment_id",
+            "line_number"
+          ],
+          "foreign_keys": [
+            {
+              "name": "shipment_items_order_id_line_number_fkey",
+              "columns": [
+                "order_id",
+                "line_number"
+              ],
+              "referred_schema": "retail",
+              "referred_table": "order_items",
+              "referred_columns": [
+                "order_id",
+                "line_number"
+              ]
+            },
+            {
+              "name": "shipment_items_shipment_id_order_id_fkey",
+              "columns": [
+                "shipment_id",
+                "order_id"
+              ],
+              "referred_schema": "retail",
+              "referred_table": "shipments",
+              "referred_columns": [
+                "shipment_id",
+                "order_id"
+              ]
+            }
+          ],
+          "unique_constraints": [],
+          "columns": [
+            {
+              "name": "shipment_id",
+              "type": "BIGINT",
+              "description": "Shipment containing the shipped order line.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": true,
+              "foreign_keys": [
+                {
+                  "schema": "retail",
+                  "table": "shipments",
+                  "column": "shipment_id"
+                }
+              ],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "order_id",
+              "type": "BIGINT",
+              "description": "Order associated with both the shipment and the order line.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [
+                {
+                  "schema": "retail",
+                  "table": "order_items",
+                  "column": "order_id"
+                },
+                {
+                  "schema": "retail",
+                  "table": "shipments",
+                  "column": "order_id"
+                }
+              ],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "line_number",
+              "type": "SMALLINT",
+              "description": "Order line included in the shipment.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": true,
+              "foreign_keys": [
+                {
+                  "schema": "retail",
+                  "table": "order_items",
+                  "column": "line_number"
+                }
+              ],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "quantity",
+              "type": "INTEGER",
+              "description": "Number of units from the order line included in this shipment.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            }
+          ]
+        },
+        {
+          "name": "shipments",
+          "kind": "table",
+          "description": "Order shipment tracking, carrier, dispatch warehouse, timestamps, and delivery state.",
+          "primary_key": [
+            "shipment_id"
+          ],
+          "foreign_keys": [
+            {
+              "name": "shipments_order_id_fkey",
+              "columns": [
+                "order_id"
+              ],
+              "referred_schema": "retail",
+              "referred_table": "orders",
+              "referred_columns": [
+                "order_id"
+              ]
+            },
+            {
+              "name": "shipments_warehouse_id_fkey",
+              "columns": [
+                "warehouse_id"
+              ],
+              "referred_schema": "retail",
+              "referred_table": "warehouses",
+              "referred_columns": [
+                "warehouse_id"
+              ]
+            }
+          ],
+          "unique_constraints": [
+            {
+              "name": "shipments_shipment_id_order_id_key",
+              "columns": [
+                "shipment_id",
+                "order_id"
+              ]
+            },
+            {
+              "name": "shipments_tracking_number_key",
+              "columns": [
+                "tracking_number"
+              ]
+            }
+          ],
+          "columns": [
+            {
+              "name": "shipment_id",
+              "type": "BIGINT",
+              "description": "Stable generated identifier for one shipment.",
+              "nullable": false,
+              "server_default": null,
+              "identity": {
+                "always": false,
+                "start": 1,
+                "increment": 1
+              },
+              "primary_key": true,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "order_id",
+              "type": "BIGINT",
+              "description": "Order fulfilled by this shipment; only one shipment per order in this dataset.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [
+                {
+                  "schema": "retail",
+                  "table": "orders",
+                  "column": "order_id"
+                }
+              ],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "warehouse_id",
+              "type": "BIGINT",
+              "description": "Warehouse from which this shipment was dispatched.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [
+                {
+                  "schema": "retail",
+                  "table": "warehouses",
+                  "column": "warehouse_id"
+                }
+              ],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "carrier",
+              "type": "TEXT",
+              "description": "Delivery carrier responsible for transporting the shipment.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": true,
+              "sample_values": [
+                "AusPost",
+                "Sendle",
+                "StarTrack"
+              ]
+            },
+            {
+              "name": "tracking_number",
+              "type": "TEXT",
+              "description": "Unique carrier tracking reference for the shipment.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "shipped_at",
+              "type": "TIMESTAMP",
+              "description": "Timestamp when the shipment left the warehouse.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "delivered_at",
+              "type": "TIMESTAMP",
+              "description": "Delivery timestamp; null until delivery is confirmed.",
+              "nullable": true,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "status",
+              "type": "TEXT",
+              "description": "Shipment state: in_transit, delivered, or exception.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": true,
+              "sample_values": [
+                "delivered",
+                "in_transit"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "suppliers",
+          "kind": "table",
+          "description": "Supplier directory with contact details, country, lead time, and active status.",
+          "primary_key": [
+            "supplier_id"
+          ],
+          "foreign_keys": [],
+          "unique_constraints": [
+            {
+              "name": "suppliers_supplier_name_key",
+              "columns": [
+                "supplier_name"
+              ]
+            }
+          ],
+          "columns": [
+            {
+              "name": "supplier_id",
+              "type": "BIGINT",
+              "description": "Stable generated identifier for one supplier.",
+              "nullable": false,
+              "server_default": null,
+              "identity": {
+                "always": false,
+                "start": 1,
+                "increment": 1
+              },
+              "primary_key": true,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "supplier_name",
+              "type": "TEXT",
+              "description": "Display name of the supplier company.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "country_code",
+              "type": "CHAR(2)",
+              "description": "Two-letter ISO 3166-1 country code for the supplier.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": true,
+              "sample_values": [
+                "AU",
+                "CA",
+                "DE",
+                "JP"
+              ]
+            },
+            {
+              "name": "contact_email",
+              "type": "TEXT",
+              "description": "Supplier contact email address.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "lead_time_days",
+              "type": "INTEGER",
+              "description": "Expected supplier replenishment lead time in calendar days.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "active",
+              "type": "BOOLEAN",
+              "description": "Whether the supplier is currently available for purchasing.",
+              "nullable": false,
+              "server_default": "true",
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": true,
+              "sample_values": [
+                false,
+                true
+              ]
+            }
+          ]
+        },
+        {
+          "name": "warehouses",
+          "kind": "table",
+          "description": "Physical warehouses and fulfillment centers that hold and dispatch inventory.",
+          "primary_key": [
+            "warehouse_id"
+          ],
+          "foreign_keys": [],
+          "unique_constraints": [
+            {
+              "name": "warehouses_warehouse_name_key",
+              "columns": [
+                "warehouse_name"
+              ]
+            }
+          ],
+          "columns": [
+            {
+              "name": "warehouse_id",
+              "type": "BIGINT",
+              "description": "Stable generated identifier for one fulfillment warehouse.",
+              "nullable": false,
+              "server_default": null,
+              "identity": {
+                "always": false,
+                "start": 1,
+                "increment": 1
+              },
+              "primary_key": true,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "warehouse_name",
+              "type": "TEXT",
+              "description": "Unique display name of the warehouse or fulfillment center.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "city",
+              "type": "TEXT",
+              "description": "City where the warehouse is located.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": true,
+              "sample_values": [
+                "Brisbane",
+                "Melbourne",
+                "Sydney"
+              ]
+            },
+            {
+              "name": "state_region",
+              "type": "TEXT",
+              "description": "State, territory, or region where the warehouse is located.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": true,
+              "sample_values": [
+                "NSW",
+                "QLD",
+                "VIC"
+              ]
+            },
+            {
+              "name": "country_code",
+              "type": "CHAR(2)",
+              "description": "Two-letter ISO 3166-1 country code for the warehouse.",
+              "nullable": false,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": true,
+              "sample_values": [
+                "AU"
+              ]
+            }
+          ]
+        }
+      ],
+      "views": [
+        {
+          "name": "customer_summary",
+          "kind": "view",
+          "description": "Per-customer order counts, fulfilled order value, segment, and most recent order timestamp.",
+          "primary_key": [],
+          "foreign_keys": [],
+          "unique_constraints": [],
+          "columns": [
+            {
+              "name": "customer_id",
+              "type": "BIGINT",
+              "description": "Internal identifier of the summarized customer.",
+              "nullable": true,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "first_name",
+              "type": "TEXT",
+              "description": "Customer given name.",
+              "nullable": true,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "last_name",
+              "type": "TEXT",
+              "description": "Customer family name.",
+              "nullable": true,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "segment",
+              "type": "TEXT",
+              "description": "Commercial customer grouping.",
+              "nullable": true,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": true,
+              "sample_values": [
+                "consumer",
+                "enterprise",
+                "small_business"
+              ]
+            },
+            {
+              "name": "completed_or_open_orders",
+              "type": "BIGINT",
+              "description": "Count of the customer orders whose status is not cancelled.",
+              "nullable": true,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "fulfilled_order_value",
+              "type": "NUMERIC(14, 2)",
+              "description": "Sum of line totals including tax for shipped or delivered orders; excludes cancelled and open orders.",
+              "nullable": true,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "most_recent_order_at",
+              "type": "TIMESTAMP",
+              "description": "Timestamp of the latest order of any status for the customer.",
+              "nullable": true,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            }
+          ],
+          "definition": " SELECT c.customer_id,\n    c.first_name,\n    c.last_name,\n    c.segment,\n    count(DISTINCT o.order_id) FILTER (WHERE (o.status <> 'cancelled'::text)) AS completed_or_open_orders,\n    (COALESCE(sum(ot.total) FILTER (WHERE (o.status = ANY (ARRAY['shipped'::text, 'delivered'::text]))), (0)::numeric))::numeric(14,2) AS fulfilled_order_value,\n    max(o.ordered_at) AS most_recent_order_at\n   FROM ((retail.customers c\n     LEFT JOIN retail.orders o USING (customer_id))\n     LEFT JOIN retail.order_totals ot USING (order_id))\n  GROUP BY c.customer_id;"
+        },
+        {
+          "name": "monthly_sales",
+          "kind": "view",
+          "description": "Monthly shipped and delivered sales summarized by product category, including orders, units, and net sales before tax.",
+          "primary_key": [],
+          "foreign_keys": [],
+          "unique_constraints": [],
+          "columns": [
+            {
+              "name": "sales_month",
+              "type": "DATE",
+              "description": "First calendar day of the sales month.",
+              "nullable": true,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "category_id",
+              "type": "BIGINT",
+              "description": "Product category identifier used to group sales.",
+              "nullable": true,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "category_name",
+              "type": "TEXT",
+              "description": "Human-readable product category used to group sales.",
+              "nullable": true,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "order_count",
+              "type": "BIGINT",
+              "description": "Distinct shipped or delivered orders containing this category in the month.",
+              "nullable": true,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "units_sold",
+              "type": "BIGINT",
+              "description": "Units sold in shipped or delivered orders for the category and month.",
+              "nullable": true,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "net_sales_before_tax",
+              "type": "NUMERIC(14, 2)",
+              "description": "Line sales after line discounts and before tax for shipped or delivered orders.",
+              "nullable": true,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            }
+          ],
+          "definition": " SELECT (date_trunc('month'::text, o.ordered_at))::date AS sales_month,\n    p.category_id,\n    c.category_name,\n    count(DISTINCT o.order_id) AS order_count,\n    sum(oi.quantity) AS units_sold,\n    (sum((((oi.quantity)::numeric * oi.unit_price) * ((1)::numeric - oi.discount_pct))))::numeric(14,2) AS net_sales_before_tax\n   FROM (((retail.orders o\n     JOIN retail.order_items oi USING (order_id))\n     JOIN retail.products p USING (product_id))\n     JOIN retail.categories c USING (category_id))\n  WHERE (o.status = ANY (ARRAY['shipped'::text, 'delivered'::text]))\n  GROUP BY ((date_trunc('month'::text, o.ordered_at))::date), p.category_id, c.category_name;"
+        },
+        {
+          "name": "order_totals",
+          "kind": "view",
+          "description": "Per-order monetary summary derived from order lines, including subtotal, line discounts, tax, and total.",
+          "primary_key": [],
+          "foreign_keys": [],
+          "unique_constraints": [],
+          "columns": [
+            {
+              "name": "order_id",
+              "type": "BIGINT",
+              "description": "Internal identifier of the order summarized by this view.",
+              "nullable": true,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "order_number",
+              "type": "TEXT",
+              "description": "Customer-facing order reference.",
+              "nullable": true,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "customer_id",
+              "type": "BIGINT",
+              "description": "Customer who placed the order.",
+              "nullable": true,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "ordered_at",
+              "type": "TIMESTAMP",
+              "description": "Timestamp when the order was placed.",
+              "nullable": true,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "status",
+              "type": "TEXT",
+              "description": "Current order lifecycle state.",
+              "nullable": true,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": true,
+              "sample_values": [
+                "cancelled",
+                "delivered",
+                "pending",
+                "processing",
+                "shipped"
+              ]
+            },
+            {
+              "name": "subtotal",
+              "type": "NUMERIC(12, 2)",
+              "description": "Sum of line quantity times captured unit price before discounts and tax.",
+              "nullable": true,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "line_discounts",
+              "type": "NUMERIC(12, 2)",
+              "description": "Total line-item discount amount before tax; promotion mappings are not additionally deducted.",
+              "nullable": true,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "tax",
+              "type": "NUMERIC(12, 2)",
+              "description": "Tax summed across order lines after each line-level discount.",
+              "nullable": true,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            },
+            {
+              "name": "total",
+              "type": "NUMERIC(12, 2)",
+              "description": "Order line total after line discounts and tax; excludes shipping charges.",
+              "nullable": true,
+              "server_default": null,
+              "identity": null,
+              "primary_key": false,
+              "foreign_keys": [],
+              "is_categorical": false,
+              "sample_values": null
+            }
+          ],
+          "definition": " SELECT o.order_id,\n    o.order_number,\n    o.customer_id,\n    o.ordered_at,\n    o.status,\n    (sum(((oi.quantity)::numeric * oi.unit_price)))::numeric(12,2) AS subtotal,\n    (sum((((oi.quantity)::numeric * oi.unit_price) * oi.discount_pct)))::numeric(12,2) AS line_discounts,\n    (sum(((((oi.quantity)::numeric * oi.unit_price) * ((1)::numeric - oi.discount_pct)) * oi.tax_rate)))::numeric(12,2) AS tax,\n    (sum(((((oi.quantity)::numeric * oi.unit_price) * ((1)::numeric - oi.discount_pct)) * ((1)::numeric + oi.tax_rate))))::numeric(12,2) AS total\n   FROM (retail.orders o\n     JOIN retail.order_items oi USING (order_id))\n  GROUP BY o.order_id;"
+        }
+      ]
+    }
+  ]
+}

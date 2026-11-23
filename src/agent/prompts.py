@@ -11,6 +11,22 @@ Here are the relevant parts of the database schema for you to generate a query f
 If the user's question maps to multiple possible interpretations (e.g., "revenue" could mean gross or net), return a structured clarification request instead of guessing.
 """
 
+COMPLEXITY_PROMPT = """
+Decide whether answering the user's natural-language question requires complex SQL.
+Classify as complex when it needs multiple related joins, nested or multi-stage
+aggregation, window functions, several business rules, or other substantial SQL
+reasoning. Simple filtering, sorting, and a single straightforward aggregate are
+not complex. Judge the query itself, not how long its schema context is.
+"""
+
+SQL_GENERATION_STRATEGIES = (
+    "Generate the clearest direct SQL solution. Prefer a straightforward SELECT "
+    "with explicit joins and avoid CTEs unless they materially improve clarity.",
+    "Independently solve the question by first decomposing it into logical steps. "
+    "Prefer named CTEs for those steps, and verify joins, filters, and aggregation "
+    "against the requested result before returning SQL.",
+)
+
 BACKCHECK_PROMPT = """
 What question does this SQL query answer?
 {sql_query}

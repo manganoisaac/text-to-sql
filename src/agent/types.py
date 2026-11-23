@@ -30,9 +30,21 @@ class SQLResult(BaseModel):
     )
 
 
+class QueryComplexity(BaseModel):
+    is_complex: bool = Field(
+        description=(
+            "Whether answering the question requires complex SQL, such as "
+            "multiple joins, nested logic, multiple aggregation stages, or "
+            "careful interpretation of business rules"
+        )
+    )
+    reason: str = Field(description="Brief explanation for the classification")
+
+
 class SQLAgentState(MessagesState):
     sql_result: dict[str, Any]
     user_query: str
+    sql_agreement: float | None
 
 
 # Types used by sanity_checker_agent.py
